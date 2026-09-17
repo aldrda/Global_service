@@ -1,37 +1,43 @@
-
 # 🌍 Global Service Business Analytics
+
+![Global Service Business Analytics](cover.png)
 
 ## 📌 Project Overview
 
-**Global Service Business Analytics** is a data analytics project designed to analyze service operations, branch performance, revenue, working hours, clients, and service activities across different regions and countries.
+**Global Service Business Analytics** is an end-to-end data analytics project focused on analyzing global service operations, branch performance, revenue, working hours, clients, departments, countries, and regions.
 
-The project uses **SQL Server** to transform and analyze the underlying data through reusable SQL Views, preparing a clean analytical layer that can be connected to **Power BI** for interactive business dashboards and decision-making.
+The project uses **SQL Server and T-SQL** to transform raw service data into structured analytical Views, which are then used as the foundation for **Power BI** dashboards and business analysis.
+
+The solution is designed to answer practical business questions and provide management with a clear view of service performance across different branches, countries, and regions.
 
 ---
 
-## 🎯 Business Objective
+# 🎯 Business Objective
 
-The main objective is to transform raw service data into meaningful business insights that help answer questions such as:
+The main objective of the project is to transform raw operational service data into meaningful business insights that support performance monitoring and business decision-making.
+
+The analysis focuses on questions such as:
 
 * Which branches generate the highest revenue?
-* Which countries and regions contribute the most to overall performance?
-* What is the total number of services delivered?
-* How many working hours are being generated?
+* Which countries and regions contribute the most revenue?
+* How many services have been delivered?
+* How many working hours have been generated?
 * What is the average hourly rate?
-* What is the revenue generated per service hour?
-* Which service types and departments generate the most revenue?
-* Which clients contribute the highest revenue?
-* How does service performance vary across branches and regions?
+* How much revenue is generated per service hour?
+* Which departments and services generate the highest revenue?
+* Which clients contribute the most revenue?
+* How does performance vary between branches and regions?
+* Which clients have the highest service and revenue contribution?
 
 ---
 
-## 🗂️ Dataset
+# 🗂️ Dataset
 
-The project is based on two main tables:
+The analysis is based on two main SQL Server tables.
 
-### `services_data`
+## `services_data`
 
-Contains detailed information about delivered services, including:
+Contains detailed information about delivered services:
 
 * `service_id`
 * `service_type_id`
@@ -45,7 +51,7 @@ Contains detailed information about delivered services, including:
 * `department`
 * `service_description`
 
-### `Branch_data`
+## `Branch_data`
 
 Contains branch and geographic information:
 
@@ -53,7 +59,9 @@ Contains branch and geographic information:
 * `Country`
 * `Region`
 
-The tables are connected through:
+### 🔗 Relationship
+
+The two tables are connected through the branch identifier:
 
 ```text
 services_data.branch_id
@@ -61,52 +69,65 @@ services_data.branch_id
 Branch_data.Branch_ID
 ```
 
+This relationship allows service-level information to be analyzed together with branch, country, and regional information.
+
 ---
 
 # 🛠️ Tools & Technologies
 
 * **SQL Server**
 * **T-SQL**
-* **Power BI**
+* **Microsoft Power BI**
+* **Data Preparation**
+* **Data Transformation**
 * **Data Modeling**
-* **Data Cleaning & Transformation**
 * **KPI Analysis**
 * **Business Intelligence**
 * **Data Visualization**
+* **SQL Analytical Views**
 
 ---
 
 # 🧠 SQL Analysis
 
-SQL was used to create reusable analytical Views instead of performing the same calculations repeatedly.
+SQL Server was used to build reusable analytical Views that organize the raw data into business-oriented datasets.
 
-## 1. Service Details View
+Instead of repeatedly performing calculations directly on the raw tables, the project creates dedicated Views for different analytical areas.
+
+---
+
+## 1️⃣ Service Details Analysis
 
 ### `vw_Service_Details`
 
-Combines service-level information with branch and geographic information.
+This View combines service-level information with branch and geographic information.
 
-The view provides:
+It includes:
 
-* Service details
-* Client information
+* Service ID
+* Client
 * Hours
-* Revenue
-* Hourly rate
+* Service Date
+* Service Time
+* Hourly Rate
+* Total Revenue
 * Department
+* Service Description
 * Branch
 * Country
 * Region
 
-This creates a unified dataset suitable for detailed analysis and Power BI reporting.
+### Purpose
+
+The View creates a unified service-level dataset that can be used for detailed analysis and Power BI reporting.
 
 ---
 
-## 2. Branch Performance View
+## 2️⃣ Branch Performance Analysis
 
 ### `vw_Branch_Performance`
 
-Measures the operational and financial performance of each branch.
+This View measures the operational and financial performance of each branch.
 
 ### Key Metrics
 
@@ -122,15 +143,15 @@ Measures the operational and financial performance of each branch.
 SUM(s.total_revenue) / NULLIF(SUM(s.hours), 0)
 ```
 
-This metric helps evaluate revenue generation relative to the number of service hours delivered.
+Revenue per Hour provides a measure of revenue generated relative to the number of service hours delivered.
 
 ---
 
-## 3. Service Performance View
+## 3️⃣ Service Performance Analysis
 
 ### `vw_Service_Performance`
 
-Analyzes performance by:
+This View analyzes service performance by:
 
 * Department
 * Service Description
@@ -142,23 +163,25 @@ Analyzes performance by:
 * Total Revenue
 * Average Hourly Rate
 
-This view can be used to identify high-revenue services and compare service activity across departments.
+This allows the analysis to compare different services and departments based on their operational activity and revenue contribution.
 
 ---
 
-## 4. Client Performance View
+## 4️⃣ Client Performance Analysis
 
 ### `vw_Client_Performance`
 
-Analyzes client contribution across regions and countries.
+This View analyzes client contribution across countries and regions.
 
 ### Key Metrics
 
 * Total Services
 * Total Hours
 * Total Revenue
+* Country
+* Region
 
-A Top 10 analysis is also performed to identify the clients generating the highest revenue.
+A Top 10 client analysis is also performed using total revenue:
 
 ```sql
 SELECT TOP 10 *
@@ -166,75 +189,104 @@ FROM vw_Client_Performance
 ORDER BY total_revenue DESC;
 ```
 
+This provides a focused view of the clients with the highest revenue contribution.
+
 ---
 
 # 📊 Power BI Dashboard
 
-The SQL Views provide the analytical foundation for the Power BI dashboard.
+The SQL analytical Views provide the structured data layer used for the Power BI dashboard.
 
-### Main Dashboard Analysis
+The dashboard focuses on four main analytical areas:
 
-The dashboard focuses on:
-
-* 💰 Revenue Performance
-* 📦 Service Volume
-* ⏱️ Total Service Hours
-* 💵 Revenue per Hour
-* 🌍 Regional Performance
-* 🏢 Branch Performance
-* 👥 Client Analysis
-* 🛠️ Service & Department Analysis
-
-### Suggested Dashboard Structure
-
-**Executive Overview**
+### 💰 Revenue Performance
 
 * Total Revenue
+* Revenue by Branch
+* Revenue by Country
+* Revenue by Region
+* Revenue per Hour
+
+### 🏢 Branch Performance
+
 * Total Services
 * Total Hours
-* Revenue per Hour
-* Revenue by Region
-* Revenue by Branch
-* Revenue Trend
-
-**Branch & Regional Analysis**
-
-* Country → Region → Branch performance
-* Revenue comparison
-* Service volume
-* Hours
+* Total Revenue
+* Average Hourly Rate
 * Revenue per Hour
 
-**Service Analysis**
+### 🛠️ Service Performance
 
-* Revenue by service
-* Services by department
-* Hours by service
-* Average hourly rate
+* Services by Department
+* Revenue by Service
+* Hours by Service
+* Average Hourly Rate
 
-**Client Analysis**
+### 👥 Client Performance
 
-* Top clients by revenue
-* Client service volume
-* Client hours
-* Revenue contribution by region
+* Total Clients
+* Client Revenue
+* Client Services
+* Client Hours
+* Top Clients by Revenue
 
 ---
 
-# 🔍 Key Analytical Questions
+# 📸 Dashboard Preview
 
-This project is designed around practical business questions rather than simply displaying data.
+## Executive Overview
 
-### What Happened?
+The overview dashboard provides a high-level view of global service performance, including key operational and financial indicators.
 
-* How much revenue was generated?
-* How many services were delivered?
-* How many hours were worked?
-* Which branches, services, and clients generated the most revenue?
+![Global Service Executive Overview](overview.png)
 
-### Why?
+---
 
-The analysis can be further explored by breaking down performance by:
+## Branch Performance
+
+The branch analysis provides a detailed comparison of branch performance across countries and regions.
+
+![Global Service Branch Performance](branch.png)
+
+---
+
+## Client Performance
+
+The client analysis focuses on service activity, working hours, and revenue contribution across clients.
+
+![Global Service Client Performance](clients.png)
+
+---
+
+# 🔍 Analytical Approach
+
+The project follows a structured analytical approach:
+
+```text
+Raw Service Data
+        ↓
+SQL Server
+        ↓
+Data Preparation
+        ↓
+Table Relationships
+        ↓
+SQL Analytical Views
+        ↓
+Business Metrics
+        ↓
+Power BI
+        ↓
+Interactive Dashboard
+        ↓
+Business Insights
+```
+
+---
+
+# 🧩 Analytical Hierarchy
+
+The analysis allows business performance to be explored from a high-level perspective down to individual clients and services:
 
 ```text
 Region
@@ -250,7 +302,74 @@ Service
 Client
 ```
 
-This allows users to move from overall performance into the underlying drivers.
+This structure allows users to move from overall global performance to specific operational drivers.
+
+---
+
+# 📈 Key Performance Indicators
+
+The project focuses on several important KPIs:
+
+| KPI                     | Description                                     |
+| ----------------------- | ----------------------------------------------- |
+| **Total Revenue**       | Total revenue generated from delivered services |
+| **Total Services**      | Number of services delivered                    |
+| **Total Hours**         | Total service hours generated                   |
+| **Average Hourly Rate** | Average rate charged per service hour           |
+| **Revenue per Hour**    | Revenue generated relative to service hours     |
+
+---
+
+# 💡 Business Insights Framework
+
+The dashboard is designed to support analysis around:
+
+### What Happened?
+
+* How much revenue was generated?
+* How many services were delivered?
+* How many hours were worked?
+* Which branches generated the highest revenue?
+* Which clients contributed the most revenue?
+
+### Where?
+
+* Which regions performed strongly?
+* Which countries generated the most revenue?
+* Which branches contributed most to regional performance?
+
+### What Drives Performance?
+
+* Which departments generate the most revenue?
+* Which services contribute most to revenue?
+* Which clients have the highest revenue contribution?
+* How does Revenue per Hour vary across branches?
+
+---
+
+# 🗃️ SQL Views
+
+The project contains four main analytical Views:
+
+```text
+vw_Service_Details
+        ↓
+Detailed service-level analysis
+
+vw_Branch_Performance
+        ↓
+Branch and geographic performance
+
+vw_Service_Performance
+        ↓
+Department and service analysis
+
+vw_Client_Performance
+        ↓
+Client and regional performance
+```
+
+These Views separate SQL-based business logic from dashboard visualization and make the analytical layer easier to reuse.
 
 ---
 
@@ -259,68 +378,76 @@ This allows users to move from overall performance into the underlying drivers.
 ```text
 Global_service/
 │
-├── SQL/
-│   ├── vw_Service_Details.sql
-│   ├── vw_Branch_Performance.sql
-│   ├── vw_Service_Performance.sql
-│   └── vw_Client_Performance.sql
+├── README.md
 │
-├── Power BI/
-│   └── Global Service Business Analytics.pbix
-│
-├── Images/
-│   └── Dashboard screenshots
-│
-└── README.md
+├── cover.png
+├── overview.png
+├── branch.png
+└── clients.png
 ```
 
 ---
 
-# 🚀 Analytical Workflow
+# 🎯 Project Skills Demonstrated
 
-```text
-Raw Data
-   ↓
-SQL Server
-   ↓
-Data Validation & Transformation
-   ↓
-SQL Views
-   ↓
-Analytical Metrics
-   ↓
-Power BI
-   ↓
-Interactive Dashboard
-   ↓
-Business Insights
-```
+This project demonstrates practical experience in:
+
+* SQL
+* T-SQL
+* SQL Server
+* Data Preparation
+* Data Transformation
+* Data Modeling
+* SQL Views
+* KPI Development
+* Revenue Analysis
+* Service Analysis
+* Branch Performance Analysis
+* Regional Analysis
+* Country Analysis
+* Client Analysis
+* Department Analysis
+* Operational Analysis
+* Revenue per Hour Analysis
+* Business Intelligence
+* Power BI
+* Data Visualization
+* Dashboard Development
+* Business Insights
 
 ---
 
-# 💡 Business Value
+# 💼 Business Value
 
-The project demonstrates how raw operational data can be transformed into a structured analytical solution.
+This project demonstrates how raw operational data can be transformed into a structured business analytics solution.
 
-By combining **SQL analysis** with **Power BI visualization**, decision-makers can examine revenue, service activity, branch performance, client contribution, and operational efficiency from multiple perspectives.
+By combining **SQL Server** for data preparation and analytical logic with **Power BI** for visualization, the solution provides multiple perspectives for understanding:
 
-The approach also makes the analysis more scalable by separating data preparation and business logic in SQL from visualization and interactive exploration in Power BI.
+* Revenue performance
+* Service activity
+* Branch performance
+* Regional performance
+* Client contribution
+* Department performance
+* Service efficiency
+
+The separation between SQL-based data preparation and Power BI visualization also provides a structured and reusable approach to business intelligence reporting.
 
 ---
 
 # 👩‍💻 Author
 
 **Aldrda Ali**
-Data Analyst
+**Data Analyst**
 
-### Connect with me
+### Profiles
 
-* **GitHub:** https://github.com/aldrda
-* **LinkedIn:** https://www.linkedin.com/in/aldrda-ali-0217b023b
-* **Portfolio:** https://data-analyst.aldrda.workers.dev/
+* GitHub: `aldrda`
+* LinkedIn: `aldrda-ali`
+* Portfolio: `data-analyst.aldrda.workers.dev`
 
 ---
 
 ## ⭐ Project Focus
 
-**SQL Server • T-SQL • Power BI • Data Analysis • Business Intelligence • KPI Development • Data Visualization**
+**SQL Server • T-SQL • Power BI • Data Analysis • Business Intelligence • KPI Analysis • Data Visualization • Dashboard Development**
